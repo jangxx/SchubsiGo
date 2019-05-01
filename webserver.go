@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/jangxx/go-poclient"
+
 	"github.com/GeertJohan/go.rice"
 
 	"github.com/gorilla/mux"
@@ -61,6 +63,7 @@ func LoginRoute(resp http.ResponseWriter, req *http.Request) {
 	requestData := struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`
+		Code2FA  string `json:"twofacode"`
 	}{}
 
 	err := json.NewDecoder(req.Body).Decode(&requestData)
@@ -70,7 +73,16 @@ func LoginRoute(resp http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	err = pushover.Login(requestData.Email, requestData.Password)
+	if requestData.Code2FA == "" {
+		err = pushover.Login(requestData.Email, requestData.Password)
+	} else {
+		err = pushover.Login2FA(requestData.Email, requestData.Password, requestData.Code2FA)
+	}
+
+	if _, is2faerror := err.(*poclient.Missing2FAError); is2faerror {
+		resp.Write([]byte("2FA_MISSING"))
+		return
+	}
 
 	if err != nil {
 		http.Error(resp, err.Error(), http.StatusInternalServerError)
@@ -85,6 +97,8 @@ func LoginRoute(resp http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		resp.Write([]byte(err.Error()))
 	}
+
+	resp.Write([]byte("SUCCESS"))
 }
 
 func RegisterRoute(resp http.ResponseWriter, req *http.Request) {

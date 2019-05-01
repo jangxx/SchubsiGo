@@ -6,6 +6,7 @@ An unofficial Pushover Client for Linux written in Go.
 - Uses native desktop notifications
 - Login and register device via simple webinterface
 - Supports opening URLs directly from the notification
+- Supports 2 Factor Authentication logins
 
 ## Missing features from the Pushover Open Client specification
 
