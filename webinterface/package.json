@@ -11,7 +11,7 @@
     "url": "https://github.com/jangxx/SchubsiGo.git"
   },
   "author": "Jan Scheiper <jan@janscheiper.de>",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "axios": "^0.18.0",
     "babel-core": "^6.26.0",
