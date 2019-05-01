@@ -14,8 +14,8 @@ import (
 
 var config Config
 var server *http.Server
-var pushover *poclient.POClient
-var messages map[poclient.MessageID]poclient.Message
+var pushover *poclient.Client
+var messages map[int]poclient.Message
 
 func main() {
 	icondata, err := ioutil.ReadFile(filepath.FromSlash("./icon/icon.png"))
@@ -31,7 +31,7 @@ func main() {
 
 		trayhost.SetUrl("http://" + config.Webserver.Addr + ":" + config.Webserver.Port)
 
-		messages = make(map[poclient.MessageID]poclient.Message)
+		messages = make(map[int]poclient.Message)
 
 		pushover = initPOClient(config)
 

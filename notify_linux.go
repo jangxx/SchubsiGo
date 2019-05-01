@@ -57,14 +57,14 @@ func sendNotification(message poclient.Message) {
 	actions := []string{}
 	actionData := NotificationActions{}
 
-	if message.Url != "" {
+	if message.URL != "" {
 		label := "Open URL"
-		if message.UrlTitle != "" {
-			label = message.UrlTitle
+		if message.URLTitle != "" {
+			label = message.URLTitle
 		}
 
 		actions = append(actions, "openurl", label)
-		actionData.url = message.Url
+		actionData.url = message.URL
 	}
 
 	n := notify.Notification{
@@ -77,8 +77,8 @@ func sendNotification(message poclient.Message) {
 		ExpireTimeout: int32(5000),
 	}
 
-	if config.cache.Exists(message.IconId + ".png") {
-		iconPath := path.Join(config.cache.Path, message.IconId+".png")
+	if config.cache.Exists(message.IconID + ".png") {
+		iconPath := path.Join(config.cache.Path, message.IconID+".png")
 		n.AppIcon = iconPath
 	}
 

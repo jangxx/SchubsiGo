@@ -8,9 +8,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@j4ns.de:git/drawmything-go-html.git"
+    "url": "https://github.com/jangxx/SchubsiGo.git"
   },
-  "author": "Jan Scheiper <janscheiper95@gmail.com>",
+  "author": "Jan Scheiper <jan@janscheiper.de>",
   "license": "ISC",
   "devDependencies": {
     "babel-core": "^6.26.0",
@@ -21,19 +21,19 @@
     "envify": "^4.1.0",
     "events": "^1.1.1",
     "glob": "^7.1.2",
-    "gulp": "^3.9.1",
+    "gulp": "^4.0.1",
     "gulp-babel": "^7.0.0",
     "gulp-ejs": "^3.1.1",
     "gulp-if": "^2.0.2",
-    "gulp-sass": "^3.1.0",
+    "gulp-sass": "^4.0.2",
     "gulp-sourcemaps": "^2.6.1",
-    "gulp-uglify": "^3.0.0",
+    "gulp-uglify-es": "^1.0.4",
     "inherits": "^2.0.3",
     "moment": "^2.20.1",
     "superagent": "^3.8.2",
     "url-join": "^3.0.0",
     "vinyl-buffer": "^1.0.0",
-    "vinyl-source-stream": "^1.1.0",
+    "vinyl-source-stream": "^2.0.0",
     "vue": "^2.5.13"
   }
 }

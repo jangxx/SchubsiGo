@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 
-	"github.com/jangxx/go-poclient"
 	"github.com/shibukawa/configdir"
 )
 
@@ -11,9 +10,9 @@ type Config struct {
 	configDir configdir.ConfigDir
 	cache     *configdir.Config
 
-	Userid     poclient.UserID   `json:"user_id"`
-	Usersecret poclient.Secret   `json:"user_secret"`
-	Deviceid   poclient.DeviceID `json:"device_id"`
+	Userid     string `json:"user_id"`
+	Usersecret string `json:"user_secret"`
+	Deviceid   string `json:"device_id"`
 
 	Webserver WebserverConfig `json:"webserver"`
 }
