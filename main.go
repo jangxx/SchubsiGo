@@ -16,6 +16,7 @@ var config Config
 var server *http.Server
 var pushover *poclient.Client
 var messages map[int]poclient.Message
+var pushover_retry = make(chan bool)
 
 func main() {
 	icondata, err := ioutil.ReadFile(filepath.FromSlash("./icon/icon.png"))

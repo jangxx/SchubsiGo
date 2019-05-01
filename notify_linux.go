@@ -90,3 +90,17 @@ func sendNotification(message poclient.Message) {
 		notifications[id] = actionData
 	}
 }
+
+func sendStatusNotification(status string) {
+	n := notify.Notification{
+		AppName:    "SchubsiGo",
+		ReplacesID: 0,
+		Body:       status,
+	}
+
+	_, err := notifier.SendNotification(n)
+
+	if err != nil {
+		log.Println(err.Error())
+	}
+}

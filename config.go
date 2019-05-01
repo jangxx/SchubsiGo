@@ -14,6 +14,9 @@ type Config struct {
 	Usersecret string `json:"user_secret"`
 	Deviceid   string `json:"device_id"`
 
+	Display_Username   string `json:"display_username"`
+	Display_Devicename string `json:"display_devicename"`
+
 	Webserver WebserverConfig `json:"webserver"`
 }
 

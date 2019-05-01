@@ -32,6 +32,7 @@ func initPOClient(config Config) *poclient.Client {
 }
 
 func resetPOClient() {
+	pushover.CloseWebsocket()
 	pushover = poclient.New()
 }
 
@@ -56,8 +57,17 @@ func listenForNotifications(po *poclient.Client) {
 		log.Println(err.Error())
 
 		if _, iserrorframe := err.(*poclient.ErrorFrameError); iserrorframe {
-			//relogin in required
+			// reset user config
+			config.Userid = ""
+			config.Usersecret = ""
+			config.Deviceid = ""
+			config.Display_Devicename = ""
+			config.Display_Username = ""
 
+			sendStatusNotification("A permanent error occured. You need to re-login after the application is closed.")
 		}
+
+		<-pushover_retry // wait until a retry makes sense
+		log.Println("Retrying connection")
 	}
 }

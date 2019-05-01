@@ -13,6 +13,7 @@
   "author": "Jan Scheiper <jan@janscheiper.de>",
   "license": "ISC",
   "devDependencies": {
+    "axios": "^0.18.0",
     "babel-core": "^6.26.0",
     "babel-preset-env": "^1.6.0",
     "babelify": "^8.0.0",
@@ -30,7 +31,6 @@
     "gulp-uglify-es": "^1.0.4",
     "inherits": "^2.0.3",
     "moment": "^2.20.1",
-    "superagent": "^3.8.2",
     "url-join": "^3.0.0",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^2.0.0",

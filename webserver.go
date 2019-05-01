@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 
@@ -21,11 +22,14 @@ func initWebserver(config WebserverConfig) *http.Server {
 
 	r.HandleFunc("/login", serveSingleFile(buildBox, "html/login.html")).Methods("GET")
 	r.HandleFunc("/registerdevice", serveSingleFile(buildBox, "html/registerdevice.html")).Methods("GET")
+	r.HandleFunc("/done", serveSingleFile(buildBox, "html/done.html")).Methods("GET")
 
 	apiRouter := r.PathPrefix("/api").Subrouter()
 
 	apiRouter.HandleFunc("/login", LoginRoute).Methods("POST")
 	apiRouter.HandleFunc("/register", RegisterRoute).Methods("POST")
+	apiRouter.HandleFunc("/logout", LogoutRoute).Methods("POST")
+	apiRouter.HandleFunc("/userinfo", UserinfoRoute).Methods("GET")
 
 	srv := &http.Server{
 		Handler: r,
@@ -54,50 +58,100 @@ func IndexRoute(resp http.ResponseWriter, req *http.Request) {
 }
 
 func LoginRoute(resp http.ResponseWriter, req *http.Request) {
-	if err := req.ParseForm(); err != nil {
-		http.Error(resp, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	requestData := struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}{}
 
-	email := req.PostFormValue("email")
-	password := req.PostFormValue("password")
-
-	err := pushover.Login(email, password)
+	err := json.NewDecoder(req.Body).Decode(&requestData)
 
 	if err != nil {
 		http.Error(resp, err.Error(), http.StatusInternalServerError)
 		return
-	} else {
-		//store user info in config and return successfully
-		config.Userid, config.Usersecret = pushover.User()
+	}
 
-		err := storeConfig(config, "settings.json")
-		if err != nil {
-			resp.Write([]byte(err.Error()))
-		}
+	err = pushover.Login(requestData.Email, requestData.Password)
+
+	if err != nil {
+		http.Error(resp, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	//store user info in config and return successfully
+	config.Userid, config.Usersecret = pushover.User()
+	config.Display_Username = requestData.Email
+
+	err = storeConfig(config, "settings.json")
+	if err != nil {
+		resp.Write([]byte(err.Error()))
 	}
 }
 
 func RegisterRoute(resp http.ResponseWriter, req *http.Request) {
-	if err := req.ParseForm(); err != nil {
-		http.Error(resp, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	requestData := struct {
+		Devicename string `json:"devicename"`
+	}{}
 
-	devicename := req.PostFormValue("devicename")
-
-	err := pushover.RegisterDevice(devicename)
+	err := json.NewDecoder(req.Body).Decode(&requestData)
 
 	if err != nil {
 		http.Error(resp, err.Error(), http.StatusInternalServerError)
 		return
-	} else {
-		//store user info in config and return successfully
-		config.Deviceid = pushover.Device()
-
-		err := storeConfig(config, "settings.json")
-		if err != nil {
-			resp.Write([]byte(err.Error()))
-		}
 	}
+
+	err = pushover.RegisterDevice(requestData.Devicename)
+
+	if err != nil {
+		http.Error(resp, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	pushover_retry <- true // allow the notification thread to try again
+
+	// store user info in config and return successfully
+	config.Deviceid = pushover.Device()
+	config.Display_Devicename = requestData.Devicename
+
+	err = storeConfig(config, "settings.json")
+	if err != nil {
+		resp.Write([]byte(err.Error()))
+	}
+}
+
+func LogoutRoute(resp http.ResponseWriter, req *http.Request) {
+	resetPOClient()
+
+	// reset user config
+	config.Userid = ""
+	config.Usersecret = ""
+	config.Deviceid = ""
+	config.Display_Devicename = ""
+	config.Display_Username = ""
+
+	err := storeConfig(config, "settings.json")
+	if err != nil {
+		resp.Write([]byte(err.Error()))
+	}
+}
+
+func UserinfoRoute(resp http.ResponseWriter, req *http.Request) {
+	display_username := config.Display_Username
+	display_devicename := config.Display_Devicename
+
+	loggedin, registered := pushover.GetStatus()
+
+	response := struct {
+		Username   string `json:"username"`
+		Devicename string `json:"devicename"`
+		LoggedIn   bool   `json:"loggedin"`
+		Registered bool   `json:"registered"`
+	}{
+		display_username,
+		display_devicename,
+		loggedin,
+		registered,
+	}
+
+	resp.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(resp).Encode(response)
 }

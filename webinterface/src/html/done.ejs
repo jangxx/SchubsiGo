@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>SchubsiGo</title>
+        <%- include("includes/global-header") %>
+
+        <link href="build/css/done.css" rel="stylesheet">
+
+        <script type="text/javascript" src="build/js/done.js"></script>
+    </head>
+    <body>
+        <header><div class="logo">SchubsiGo</div></header>
+        <main>
+            <div style="margin-bottom: 20px; text-align: center; line-height: 1.5em;" v-if="logged_in">
+                Currently logged in as:<br>
+                <b>Email:</b> {{ userinfo.username }}<br>
+                <b>Device Name:</b> <span v-if="registered">{{ userinfo.devicename }}</span><span v-else><i>Not registered</i> (<a href="/registerdevice">Click to register</a>)</span>
+            </div>
+            <div style="margin-bottom: 20px; text-align: center; line-height: 1.5em;" v-else>
+                Not logged in. <a href="/login">Login</a>
+            </div>
+
+            <div style="text-align: center" v-if="logged_in">
+                <button class="red" @click="logout">Logout</button>
+            </div>
+        </main>
+    </body>
+</html>

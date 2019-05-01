@@ -3,11 +3,21 @@ $white: white;
 $green: #00B16A;
 $red: #CF000F;
 
+$radius: 10px;
+
 @import url('https://fonts.googleapis.com/css?family=Kadwa:700');
 
 html, body {
     margin: 0px;
     font-family: Arial, Helvetica, sans-serif;
+    color: $white;
+}
+
+body {
+    background-color: $po_blue;
+    width: 400px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .logo {
@@ -16,7 +26,6 @@ html, body {
     font-weight: bold;
 }
 
-$radius: 10px;
 .input-group {
 
     input {
@@ -41,7 +50,7 @@ $radius: 10px;
     }
 }
 
-.button {
+.button, button {
     border-radius: $radius;
     padding: 10px 30px;
     border-width: 1px;
@@ -49,8 +58,21 @@ $radius: 10px;
     border-style: solid;
     cursor: pointer;
 
+    &:hover {
+        text-decoration: underline;
+    }
+
+    &:active {
+        transform: scale(0.9);
+    }
+
     &.green {
         background-color: $green;
+        color: $white;
+    }
+
+    &.red {
+        background-color: $red;
         color: $white;
     }
 }
@@ -60,4 +82,8 @@ $radius: 10px;
     color: $white;
     text-align: center;
     padding: 5px;
+}
+
+header {
+    text-align: center;
 }
