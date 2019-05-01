@@ -1,11 +1,11 @@
 package main
 
 import (
-	"io/ioutil"
 	"log"
 	"net/http"
-	"path/filepath"
 	"runtime"
+
+	"github.com/GeertJohan/go.rice"
 
 	"github.com/cratonica/trayhost"
 	"github.com/jangxx/go-poclient"
@@ -19,10 +19,8 @@ var messages map[int]poclient.Message
 var pushover_retry = make(chan bool)
 
 func main() {
-	icondata, err := ioutil.ReadFile(filepath.FromSlash("./icon/icon.png"))
-	if err != nil {
-		log.Fatal(err)
-	}
+	iconBox := rice.MustFindBox("./icon")
+	icondata := iconBox.MustBytes("icon.png")
 
 	runtime.LockOSThread()
 
