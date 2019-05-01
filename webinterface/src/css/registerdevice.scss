@@ -1,0 +1,27 @@
+@import 'global';
+
+body {
+    background-color: $po_blue;
+    width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+header {
+    .logo {
+        color: $white;
+    }
+}
+
+form {
+    color: $white;
+    text-align: center;
+    border-style: solid;
+    border-color: $white;
+    border-width: 1px;
+    padding: 20px;
+}
+
+a, a:visited, a:active {
+    color: $white;
+}

@@ -1,0 +1,63 @@
+$po_blue: #249DF1;
+$white: white;
+$green: #00B16A;
+$red: #CF000F;
+
+@import url('https://fonts.googleapis.com/css?family=Kadwa:700');
+
+html, body {
+    margin: 0px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.logo {
+    font-family: 'Kadwa', serif;
+    font-size: 3em;
+    font-weight: bold;
+}
+
+$radius: 10px;
+.input-group {
+
+    input {
+        box-sizing: border-box;
+        width: 100%;
+        padding: 10px;
+        border-width: 1px;
+        border-style: none;
+        border-color: grey;
+        border-bottom-style: solid;
+
+        &:first-child {
+            border-top-left-radius: $radius;
+            border-top-right-radius: $radius;
+        }
+
+        &:last-child {
+            border-bottom-left-radius: $radius;
+            border-bottom-right-radius: $radius;
+            border-bottom-style: none;
+        }
+    }
+}
+
+.button {
+    border-radius: $radius;
+    padding: 10px 30px;
+    border-width: 1px;
+    border-color: $white;
+    border-style: solid;
+    cursor: pointer;
+
+    &.green {
+        background-color: $green;
+        color: $white;
+    }
+}
+
+.error {
+    background-color: $red;
+    color: $white;
+    text-align: center;
+    padding: 5px;
+}

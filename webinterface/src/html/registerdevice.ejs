@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>SchubsiGo - Register Device</title>
+        <%- include("includes/global-header") %>
+
+        <link href="build/css/registerdevice.css" rel="stylesheet">
+
+        <script type="text/javascript" src="build/js/registerdevice.js"></script>
+    </head>
+    <body>
+        <header><div class="logo">SchubsiGo</div></header>
+        <main>
+            <form @submit.prevent="submit">
+                <div style="margin-bottom: 10px">
+                    Enter a name for this device.
+                </div>
+                
+                <div class="error" style="margin-bottom: 10px" v-if="displayError != ''">
+                    {{displayError}}
+                </div>
+
+                <div class="input-group">
+                    <input type="text" name="devicename" placeholder="device name" maxlength="25" required>
+                </div>
+                <br>
+                <input type="submit" value="Register Device" class="button green">
+            </form>
+        </main>
+    </body>
+</html>

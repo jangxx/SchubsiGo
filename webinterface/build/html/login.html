@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>SchubsiGo - Login</title>
+        <link rel="icon" href="static/icon.png">
+
+        <link href="build/css/login.css" rel="stylesheet">
+
+        <script type="text/javascript" src="build/js/login.js"></script>
+    </head>
+    <body>
+        <header><div class="logo">SchubsiGo</div></header>
+        <main>
+            <form @submit.prevent="submit">
+                <div style="margin-bottom: 10px">
+                    Login with your Pushover account<br>
+                    Create one <a href="https://pushover.net/signup">here</a> if you haven't already.
+                </div>
+                
+                <div class="error" style="margin-bottom: 10px" v-if="displayError != ''">
+                    {{displayError}}
+                </div>
+
+                <div class="input-group">
+                    <input type="text" name="email" placeholder="email address" required>
+                    <input type="password" name="password" placeholder="password" required>
+                </div>
+                <br>
+                <input type="submit" value="Login" class="button green">
+            </form>
+        </main>
+    </body>
+</html>

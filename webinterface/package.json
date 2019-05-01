@@ -1,0 +1,39 @@
+{
+  "name": "schubsigo-webinterface",
+  "version": "1.0.0",
+  "description": "Webinterface to setup and access SchubsiGo",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@j4ns.de:git/drawmything-go-html.git"
+  },
+  "author": "Jan Scheiper <janscheiper95@gmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-preset-env": "^1.6.0",
+    "babelify": "^8.0.0",
+    "browserify": "^14.5.0",
+    "del": "^3.0.0",
+    "envify": "^4.1.0",
+    "events": "^1.1.1",
+    "glob": "^7.1.2",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^7.0.0",
+    "gulp-ejs": "^3.1.1",
+    "gulp-if": "^2.0.2",
+    "gulp-sass": "^3.1.0",
+    "gulp-sourcemaps": "^2.6.1",
+    "gulp-uglify": "^3.0.0",
+    "inherits": "^2.0.3",
+    "moment": "^2.20.1",
+    "superagent": "^3.8.2",
+    "url-join": "^3.0.0",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0",
+    "vue": "^2.5.13"
+  }
+}
