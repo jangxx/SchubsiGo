@@ -20,7 +20,7 @@ var pushover_retry = make(chan bool)
 
 func main() {
 	iconBox := rice.MustFindBox("./icon")
-	icondata := iconBox.MustBytes("icon.png")
+	icondata := iconBox.MustBytes("icon_64.png")
 
 	runtime.LockOSThread()
 

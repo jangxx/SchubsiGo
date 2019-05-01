@@ -1,4 +1,4 @@
-# SchubsiGo
+# ![Icon](./icon/icon_32.png) SchubsiGo
 An unofficial Pushover Client for Linux written in Go.
 
 ## Features
@@ -12,12 +12,20 @@ An unofficial Pushover Client for Linux written in Go.
 
 - Playing sounds with notifications (Intentionally left out since I just hate notification sounds)
 - Working with or acknowledging Emergency-Priority Messages (might be implemented in the future)
+- Displaying a list of all notifications sorted by Application. This is not really in the scope of this program; I only really wanted to display incoming messages as desktop notifications. It would be possible to integrate this into the webinterface, however.
 
 # Installation
 
     go get github.com/jangxx/SchubsiGo
 
 You can also download a binary from the releases page.
+
+# Usage
+
+After starting the program, an icon appears in the system tray area.
+Clicking on it opens the webinterface in the default webbrowser.
+You can then proceed to login and register your device there.
+Afterwards, you can use the webinterface to see your login status and log out.
 
 # Building the binary yourself
 
@@ -55,3 +63,7 @@ gulp
 You are now able to change the files around and gulp automatically updates the _build/_ directory.
 
 If you are done, simply run `gulp build --production` to build and minify all assets of the webinterface.
+
+# Attributions
+
+The icon is a modified version of an icon by [Freepik](https://www.freepik.com/) from [www.flaticon.com](https://www.flaticon.com/) licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/").

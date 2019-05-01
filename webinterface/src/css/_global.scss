@@ -93,5 +93,14 @@ body {
 }
 
 header {
-    text-align: center;
+    .logo {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    
+        img {
+            height: 50px;
+            margin-right: 10px;
+        }
+    }
 }
