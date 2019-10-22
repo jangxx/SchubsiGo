@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/jangxx/go-poclient"
 )
@@ -16,13 +17,17 @@ func listenForMessages(po *poclient.Client) {
 			messages[message.UniqueID] = message
 
 			if !config.cache.Exists(message.IconID + ".png") {
-				//download icon first
+				// download icon first
 				err := downloadMessageIcon(message)
 				if err != nil {
 					log.Println("Error while downloading icon: " + err.Error())
 				}
 			}
-			sendNotification(message)
+
+			// don't show very old notifications
+			if time.Now().Sub(message.Date) <= 24*time.Hour {
+				sendNotification(message)
+			}
 		}
 	}
 }

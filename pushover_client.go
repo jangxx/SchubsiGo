@@ -2,6 +2,8 @@ package main
 
 import (
 	"log"
+	"net"
+	"time"
 
 	"github.com/jangxx/go-poclient"
 )
@@ -41,7 +43,7 @@ func listenForNotifications(po *poclient.Client) {
 
 	if err == nil {
 		for _, msg := range messages {
-			po.Messages <- msg //shove the old messages through the channel
+			po.Messages <- msg // shove the old messages through the channel
 		}
 
 		err := po.DeleteOldMessages(messages)
@@ -67,7 +69,14 @@ func listenForNotifications(po *poclient.Client) {
 			sendStatusNotification("A permanent error occured. You need to re-login after the application is closed.")
 		}
 
-		<-pushover_retry // wait until a retry makes sense
+		if _, isneterror := err.(net.Error); isneterror {
+			// don't wait for pushover_retry if the error was network related, instead wait for 15 seconds
+			time.Sleep(15 * time.Second)
+		} else {
+			// wait until a retry makes sense if the error wasn't network related
+			<-pushover_retry
+		}
+
 		log.Println("Retrying connection")
 	}
 }
