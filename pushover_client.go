@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net"
+	"reflect"
 	"time"
 
 	"github.com/jangxx/go-poclient"
@@ -70,9 +71,14 @@ func listenForNotifications(po *poclient.Client) {
 		}
 
 		if _, isneterror := err.(net.Error); isneterror {
+			log.Println("Error was network related, retry in 15 seconds")
 			// don't wait for pushover_retry if the error was network related, instead wait for 15 seconds
 			time.Sleep(15 * time.Second)
+		} else if _, registered := po.GetStatus(); registered {
+			log.Println("Error was not network related, but we are registered; retry in 15 seconds")
+			time.Sleep(15 * time.Second)
 		} else {
+			log.Println("Error was not network related, retry when we get the instruction. Error type: " + reflect.TypeOf(err).String())
 			// wait until a retry makes sense if the error wasn't network related
 			<-pushover_retry
 		}
