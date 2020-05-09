@@ -12,6 +12,8 @@ import (
 func initPOClient(config Config) *poclient.Client {
 	po := poclient.New()
 
+	po.SetAppInfo(APP_NAME, APP_VERSION)
+
 	if config.Userid != "" && config.Usersecret != "" {
 		po.RestoreLogin(config.Usersecret, config.Userid)
 	}
@@ -21,11 +23,11 @@ func initPOClient(config Config) *poclient.Client {
 	}
 
 	if loggedIn, registered := po.GetStatus(); loggedIn && registered {
-		_, err := po.GetMessages() //get messages to test login
+		_, err := po.GetMessages() // get messages to test login
 
 		if err != nil {
 			log.Printf("Error while restoring Pushover login: %s\n", err.Error())
-			po = poclient.New() //start from scratch
+			po = poclient.New() // start from scratch
 		} else {
 			log.Printf("Successfully restored Pushover login & device registration")
 		}
@@ -67,7 +69,15 @@ func listenForNotifications(po *poclient.Client) {
 			config.Display_Devicename = ""
 			config.Display_Username = ""
 
-			sendStatusNotification("A permanent error occured. You need to re-login after the application is closed.")
+			err = storeConfig(config, "settings.json")
+			if err != nil {
+				log.Printf("Error while resetting user config: %s\n", err.Error())
+			}
+
+			sendStatusNotification("A permanent error occured. You need to re-login after the application is started again.")
+			log.Println("The pushover server sent an error frame; qutting the application now")
+			quit_channel <- true
+			return
 		}
 
 		if _, isneterror := err.(net.Error); isneterror {

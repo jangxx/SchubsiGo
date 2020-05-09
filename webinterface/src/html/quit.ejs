@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>SchubsiGo</title>
+        <%- include("includes/global-header") %>
+
+        <link href="build/css/empty.css" rel="stylesheet">
+
+    </head>
+    <body>
+        <header><div class="logo"><img src="/static/icon_256.png"> SchubsiGo</div></header>
+
+        <div style="margin-bottom: 20px; text-align: center;">
+            Are you sure you want to quit? You won't receive notifications anymore, until you start the app again.
+        </div>
+        <div style="text-align: center">
+            <button class="red" id="quit-btn">Quit</button>
+        </div>
+
+        <script type="text/javascript">
+            document.querySelector("#quit-btn").addEventListener("click", function() {
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "/api/quit");
+                xhr.send();
+
+                xhr.addEventListener("load", function() {
+                    window.location.href = "about:blank";
+                });
+            });
+        </script>
+    </body>
+</html>

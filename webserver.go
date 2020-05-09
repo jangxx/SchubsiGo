@@ -5,9 +5,8 @@ import (
 	"log"
 	"net/http"
 
+	rice "github.com/GeertJohan/go.rice"
 	"github.com/jangxx/go-poclient"
-
-	"github.com/GeertJohan/go.rice"
 
 	"github.com/gorilla/mux"
 )
@@ -25,6 +24,7 @@ func initWebserver(config WebserverConfig) *http.Server {
 	r.HandleFunc("/login", serveSingleFile(buildBox, "html/login.html")).Methods("GET")
 	r.HandleFunc("/registerdevice", serveSingleFile(buildBox, "html/registerdevice.html")).Methods("GET")
 	r.HandleFunc("/done", serveSingleFile(buildBox, "html/done.html")).Methods("GET")
+	r.HandleFunc("/quit-app", serveSingleFile(buildBox, "html/quit.html")).Methods("GET")
 
 	apiRouter := r.PathPrefix("/api").Subrouter()
 
@@ -32,13 +32,14 @@ func initWebserver(config WebserverConfig) *http.Server {
 	apiRouter.HandleFunc("/register", RegisterRoute).Methods("POST")
 	apiRouter.HandleFunc("/logout", LogoutRoute).Methods("POST")
 	apiRouter.HandleFunc("/userinfo", UserinfoRoute).Methods("GET")
+	apiRouter.HandleFunc("/quit", QuitRoute).Methods("POST")
 
 	srv := &http.Server{
 		Handler: r,
 		Addr:    config.Addr + ":" + config.Port,
 	}
 
-	log.Printf("Server is listening on %s:%s\n", config.Addr, config.Port)
+	log.Printf("Server is listening on http://%s:%s\n", config.Addr, config.Port)
 
 	go func() {
 		if err := srv.ListenAndServe(); err != nil {
@@ -168,4 +169,10 @@ func UserinfoRoute(resp http.ResponseWriter, req *http.Request) {
 
 	resp.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(resp).Encode(response)
+}
+
+func QuitRoute(resp http.ResponseWriter, req *http.Request) {
+	resp.Write([]byte("ok"))
+
+	quit_channel <- true
 }

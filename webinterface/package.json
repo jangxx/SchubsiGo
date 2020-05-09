@@ -13,7 +13,7 @@
   "author": "Jan Scheiper <jan@janscheiper.de>",
   "license": "MIT",
   "devDependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.18.1",
     "babel-core": "^6.26.0",
     "babel-preset-env": "^1.6.0",
     "babelify": "^8.0.0",
@@ -21,19 +21,19 @@
     "del": "^3.0.0",
     "envify": "^4.1.0",
     "events": "^1.1.1",
-    "glob": "^7.1.2",
-    "gulp": "^4.0.1",
+    "glob": "^7.1.6",
+    "gulp": "^4.0.2",
     "gulp-babel": "^7.0.0",
     "gulp-ejs": "^3.1.1",
     "gulp-if": "^2.0.2",
-    "gulp-sass": "^4.0.2",
+    "gulp-sass": "^4.1.0",
     "gulp-sourcemaps": "^2.6.1",
     "gulp-uglify-es": "^1.0.4",
-    "inherits": "^2.0.3",
-    "moment": "^2.20.1",
+    "inherits": "^2.0.4",
+    "moment": "^2.25.3",
     "url-join": "^3.0.0",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^2.0.0",
-    "vue": "^2.5.13"
+    "vue": "^2.6.11"
   }
 }

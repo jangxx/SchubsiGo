@@ -21,7 +21,7 @@ const paths = {
     scripts_base: 'src/js/',
     scripts: '*.js',
     html_base: 'src/html/',
-    html: '*.ejs'
+    html: '/*.ejs',
 };
 
 const use_sourcemaps = !argv.production;

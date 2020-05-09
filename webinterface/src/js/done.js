@@ -1,7 +1,7 @@
 const Vue = require("vue/dist/vue.common");
 const axios = require("axios");
 
-var app = new Vue({
+const app = new Vue({
     data: {
         userinfo: {
             username: "",

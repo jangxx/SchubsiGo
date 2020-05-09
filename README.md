@@ -27,6 +27,9 @@ Clicking on it opens the webinterface in the default webbrowser.
 You can then proceed to login and register your device there.
 Afterwards, you can use the webinterface to see your login status and log out.
 
+If your OS does not use a system tray, you can use the `--no-tray` flag, to start the app without a tray icon.
+In this case, you need to navigate to _http://localhost:33322_ manually to access the webinterface.
+
 # Building the binary yourself
 
 Install go.rice by running
@@ -59,6 +62,7 @@ npm i
 ```
 gulp
 ```
+5. (optional) Run `rice clean`, to serve the webinterface from the built-in webserver in case you ran `rice embed-go` before.
 
 You are now able to change the files around and gulp automatically updates the _build/_ directory.
 
