@@ -30,7 +30,7 @@
     "gulp-sourcemaps": "^2.6.1",
     "gulp-uglify-es": "^1.0.4",
     "inherits": "^2.0.4",
-    "moment": "^2.25.3",
+    "moment": "^2.29.2",
     "url-join": "^3.0.0",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^2.0.0",
