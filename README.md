@@ -4,9 +4,9 @@ An unofficial Pushover Client for Linux written in Go.
 ## Features
 
 - Uses native desktop notifications
-- Login and register device via simple webinterface
+- Login and register device via simple web interface
 - Supports opening URLs directly from the notification
-- Supports 2 Factor Authentication logins
+- Supports 2-FA logins
 
 ## Missing features from the Pushover Open Client specification
 
@@ -16,7 +16,7 @@ An unofficial Pushover Client for Linux written in Go.
 
 # Installation
 
-    go get github.com/jangxx/SchubsiGo
+    go install github.com/jangxx/SchubsiGo@latest
 
 You can also download a binary from the releases page.
 
@@ -34,12 +34,11 @@ In this case, you need to navigate to _http://localhost:33322_ manually to acces
 
 Install go.rice by running
 
-    go get github.com/GeertJohan/go.rice
-    go get github.com/GeertJohan/go.rice/rice
+    go install github.com/GeertJohan/go.rice/rice@latest
 
-Install libgtk3. The exact way to do this differs by distro, so here is an example for Ubuntu (and it's derivatives):
+Install libgtk3 and libayatana-appindicator3. The exact way to do this differs by distro, so here is an example for Ubuntu (and it's derivatives):
 
-    sudo apt install libgtk-3-dev
+    sudo apt install libgtk-3-dev libayatana-appindicator3-dev
 
 Clone this repository and run
 

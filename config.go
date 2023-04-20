@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"log"
 
 	"github.com/shibukawa/configdir"
 )
@@ -38,6 +39,8 @@ func loadConfig(dir configdir.ConfigDir, filename string) (Config, error) {
 
 	config := DefaultConfig
 	if folder != nil {
+		log.Printf("Loading config file: " + folder.Path)
+
 		data, err := folder.ReadFile(filename)
 		if err != nil {
 			return config, err

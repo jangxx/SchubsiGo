@@ -4,9 +4,10 @@ import (
 	"html"
 	"log"
 	"path"
+	"time"
 
 	notify "github.com/esiqveland/notify"
-	"github.com/godbus/dbus"
+	"github.com/godbus/dbus/v5"
 	"github.com/jangxx/go-poclient"
 	"github.com/skratchdot/open-golang/open"
 )
@@ -26,25 +27,17 @@ func initNotifications() {
 		log.Panicln("Error while connecting to session dbus for notifications")
 	}
 
-	notifier, err = notify.New(conn)
+	notifier, err = notify.New(conn, notify.WithOnAction(func(action *notify.ActionInvokedSignal) {
+		switch action.ActionKey {
+		case "openurl":
+			open.Run(notifications[action.ID].url)
+		}
+		delete(notifications, action.ID)
+	}))
 
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
-
-	actions := notifier.ActionInvoked()
-	go func() {
-		for {
-			action := <-actions
-			switch action.ActionKey {
-			case "default":
-				//do nothing, notification was closed
-			case "openurl":
-				open.Run(notifications[action.ID].url)
-			}
-			delete(notifications, action.ID)
-		}
-	}()
 }
 
 func sendNotification(message poclient.Message) {
@@ -54,7 +47,7 @@ func sendNotification(message poclient.Message) {
 	}
 
 	body := message.Text
-	actions := []string{}
+	actions := []notify.Action{}
 	actionData := NotificationActions{}
 
 	if message.URL != "" {
@@ -63,18 +56,21 @@ func sendNotification(message poclient.Message) {
 			label = message.URLTitle
 		}
 
-		actions = append(actions, "openurl", label)
+		actions = append(actions, notify.Action{
+			Label: label,
+			Key:   "openurl",
+		})
 		actionData.url = message.URL
 	}
 
 	n := notify.Notification{
 		AppName:       "SchubsiGo",
+		Actions:       actions,
 		ReplacesID:    0,
 		Summary:       title,
 		Body:          html.EscapeString(body),
-		Actions:       actions,
 		Hints:         map[string]dbus.Variant{},
-		ExpireTimeout: int32(5000),
+		ExpireTimeout: time.Second * 5,
 	}
 
 	if config.cache.Exists(message.IconID + ".png") {
