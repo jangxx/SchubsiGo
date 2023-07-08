@@ -26,7 +26,7 @@
     "gulp-babel": "^7.0.0",
     "gulp-ejs": "^3.1.1",
     "gulp-if": "^2.0.2",
-    "gulp-sass": "^4.1.0",
+    "gulp-sass": "^5.1.0",
     "gulp-sourcemaps": "^2.6.1",
     "gulp-uglify-es": "^1.0.4",
     "inherits": "^2.0.4",
