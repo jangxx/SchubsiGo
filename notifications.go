@@ -12,22 +12,20 @@ import (
 
 func listenForMessages(po *poclient.Client) {
 	for {
-		select {
-		case message := <-po.Messages:
-			messages[message.UniqueID] = message
+		message := <-po.Messages
+		messages[message.UniqueID] = message
 
-			if !config.cache.Exists(message.IconID + ".png") {
-				// download icon first
-				err := downloadMessageIcon(message)
-				if err != nil {
-					log.Println("Error while downloading icon: " + err.Error())
-				}
+		if !config.cache.Exists(message.IconID + ".png") {
+			// download icon first
+			err := downloadMessageIcon(message)
+			if err != nil {
+				log.Println("Error while downloading icon: " + err.Error())
 			}
+		}
 
-			// don't show very old notifications
-			if time.Now().Sub(message.Date) <= 24*time.Hour {
-				sendNotification(message)
-			}
+		// don't show very old notifications
+		if time.Since(message.Date) <= 24*time.Hour {
+			sendNotification(message)
 		}
 	}
 }

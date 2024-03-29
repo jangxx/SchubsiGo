@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"net/http"
 
 	rice "github.com/GeertJohan/go.rice"
@@ -31,10 +30,4 @@ func serveSingleFile(box *rice.Box, path string) func(http.ResponseWriter, *http
 
 		http.ServeContent(resp, req, d.Name(), d.ModTime(), f)
 	}
-}
-
-func getRequestData(req *http.Request, bodyInterface interface{}) error {
-	decoder := json.NewDecoder(req.Body)
-
-	return decoder.Decode(bodyInterface)
 }

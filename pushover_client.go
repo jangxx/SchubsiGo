@@ -1,15 +1,17 @@
 package main
 
 import (
+	"errors"
 	"log"
 	"net"
+	"net/url"
 	"reflect"
 	"time"
 
 	"github.com/jangxx/go-poclient"
 )
 
-func initPOClient(config Config) *poclient.Client {
+func initPOClient(config Config, maxRetries int) *poclient.Client {
 	po := poclient.New()
 
 	po.SetAppInfo(APP_NAME, APP_VERSION)
@@ -26,14 +28,44 @@ func initPOClient(config Config) *poclient.Client {
 		_, err := po.GetMessages() // get messages to test login
 
 		if err != nil {
-			log.Printf("Error while restoring Pushover login: %s\n", err.Error())
-			po = poclient.New() // start from scratch
+			urlErr := new(url.Error)
+
+			if errors.As(err, &urlErr) {
+				if retryInitialization(po, *urlErr, maxRetries) {
+					log.Printf("Successfully restored Pushover login & device registration")
+				} else {
+					po = poclient.New() // start from scratch
+				}
+			} else {
+				po = poclient.New() // start from scratch
+			}
 		} else {
 			log.Printf("Successfully restored Pushover login & device registration")
 		}
 	}
 
 	return po
+}
+
+func retryInitialization(po *poclient.Client, err url.Error, retries int) bool {
+	log.Printf("Error while restoring Pushover login: %s\n", err.Error())
+
+	if retries == 0 {
+		return false
+	}
+
+	log.Println("Error was network related, retry in 5 seconds")
+	time.Sleep(5 * time.Second)
+
+	_, nextErr := po.GetMessages() // get messages to test login
+
+	nextUrlErr := new(url.Error)
+
+	if nextErr != nil && errors.As(nextErr, &nextUrlErr) {
+		return retryInitialization(po, *nextUrlErr, retries-1)
+	} else {
+		return true
+	}
 }
 
 func resetPOClient() {

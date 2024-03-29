@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"log"
 	"net/http"
@@ -15,7 +16,7 @@ import (
 )
 
 const APP_NAME string = "SchubsiGo"
-const APP_VERSION string = "1.3.0"
+const APP_VERSION string = "1.4.0"
 
 var config Config
 var server *http.Server
@@ -23,11 +24,22 @@ var pushover *poclient.Client
 var messages map[int]poclient.Message
 var pushover_retry = make(chan bool)
 var quit_channel = make(chan bool)
+var maxConnectRetries int
 
 func main() {
+	log.Printf("Starting %s %s\n", APP_NAME, APP_VERSION)
+
 	disableTrayIcon := flag.Bool("no-tray", false, "Disables the tray icon")
+	maxConnectRetriesFlag := flag.Int("max-connect-retries", 5, "Maximum number of retries to connect to the Pushover API")
 
 	flag.Parse()
+
+	maxConnectRetries = *maxConnectRetriesFlag
+	log.Printf("Max connect retries: %d\n", maxConnectRetries)
+
+	if maxConnectRetries < 0 {
+		log.Fatalf("Invalid value for max-connect-retries: %d\n", maxConnectRetries)
+	}
 
 	if !*disableTrayIcon {
 		systray.Run(onReadySystray, onExit)
@@ -55,6 +67,9 @@ func onReady(noTray bool) {
 		config, _ = loadConfig(configDirs, "settings.json")
 
 		if !noTray {
+			mVersion := systray.AddMenuItem("Version: "+APP_VERSION, "Version of the app")
+			mVersion.Disable()
+
 			mOpenWeb := systray.AddMenuItem("Open Web Interface", "Open the web interface")
 			mQuit := systray.AddMenuItem("Quit", "Quit the whole app")
 
@@ -72,7 +87,7 @@ func onReady(noTray bool) {
 
 		messages = make(map[int]poclient.Message)
 
-		pushover = initPOClient(config)
+		pushover = initPOClient(config, maxConnectRetries)
 
 		initNotifications()
 		go listenForMessages(pushover)
@@ -83,13 +98,13 @@ func onReady(noTray bool) {
 	}()
 
 	go func() {
-		select {
-		case <-quit_channel:
-			if noTray {
-				os.Exit(0)
-			} else {
-				systray.Quit()
-			}
+		<-quit_channel
+
+		if noTray {
+			onExit()
+			os.Exit(0)
+		} else {
+			systray.Quit()
 		}
 	}()
 
@@ -100,7 +115,7 @@ func onReady(noTray bool) {
 
 func onExit() {
 	if server != nil {
-		server.Shutdown(nil)
+		server.Shutdown(context.Background())
 		log.Printf("Server has shut down")
 	}
 }
