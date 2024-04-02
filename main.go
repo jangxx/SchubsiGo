@@ -20,11 +20,13 @@ const APP_VERSION string = "1.4.0"
 
 var config Config
 var server *http.Server
-var pushover *poclient.Client
+var pushover *VersionedClient
 var messages map[int]poclient.Message
 var pushover_retry = make(chan bool)
 var quit_channel = make(chan bool)
+var tray_icon_channel = make(chan int)
 var maxConnectRetries int
+var currentClientVersion int = 0
 
 func main() {
 	log.Printf("Starting %s %s\n", APP_NAME, APP_VERSION)
@@ -54,12 +56,14 @@ func onReadySystray() {
 
 func onReady(noTray bool) {
 	iconBox := rice.MustFindBox("./icon")
-	icondata := iconBox.MustBytes("icon_64.png")
+	iconBlueData := iconBox.MustBytes("icon_64.png")
+	iconRedData := iconBox.MustBytes("icon_red_64.png")
+	iconYellowData := iconBox.MustBytes("icon_yellow_64.png")
 
 	if !noTray {
 		systray.SetTitle("SchubsiGo")
 		systray.SetTooltip("SchubsiGo")
-		systray.SetTemplateIcon(icondata, icondata)
+		systray.SetTemplateIcon(iconRedData, iconRedData)
 	}
 
 	go func() {
@@ -87,24 +91,36 @@ func onReady(noTray bool) {
 
 		messages = make(map[int]poclient.Message)
 
-		pushover = initPOClient(config, maxConnectRetries)
-
 		initNotifications()
-		go listenForMessages(pushover)
-
-		go listenForNotifications(pushover)
+		resetPOClient()
 
 		server = initWebserver(config.Webserver)
 	}()
 
 	go func() {
-		<-quit_channel
-
-		if noTray {
-			onExit()
-			os.Exit(0)
-		} else {
-			systray.Quit()
+		for {
+			select {
+			case <-quit_channel:
+				if noTray {
+					onExit()
+					os.Exit(0)
+				} else {
+					systray.Quit()
+				}
+			case trayIcon := <-tray_icon_channel:
+				if !noTray {
+					switch trayIcon {
+					case 0:
+						systray.SetTemplateIcon(iconBlueData, iconBlueData)
+					case 1:
+						systray.SetTemplateIcon(iconRedData, iconRedData)
+					case 2:
+						systray.SetTemplateIcon(iconYellowData, iconYellowData)
+					default:
+						log.Printf("Unknown tray icon: %d\n", trayIcon)
+					}
+				}
+			}
 		}
 	}()
 

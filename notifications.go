@@ -10,9 +10,14 @@ import (
 	"github.com/jangxx/go-poclient"
 )
 
-func listenForMessages(po *poclient.Client) {
+func listenForMessages(po *VersionedClient) {
 	for {
-		message := <-po.Messages
+		message, ok := <-po.Client.Messages
+
+		if !ok { // message channel has been closed
+			return
+		}
+
 		messages[message.UniqueID] = message
 
 		if !config.cache.Exists(message.IconID + ".png") {

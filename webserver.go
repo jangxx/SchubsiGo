@@ -13,18 +13,13 @@ import (
 
 func initWebserver(config WebserverConfig) *http.Server {
 	r := mux.NewRouter()
-
-	staticBox := rice.MustFindBox("./webinterface/static/")
-	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(staticBox.HTTPBox())))
-	buildBox := rice.MustFindBox("./webinterface/build/")
-	r.PathPrefix("/build/").Handler(http.StripPrefix("/build/", http.FileServer(buildBox.HTTPBox())))
+	buildBox := rice.MustFindBox("./webinterface/dist/")
 
 	r.HandleFunc("/", IndexRoute)
 
-	r.HandleFunc("/login", serveSingleFile(buildBox, "html/login.html")).Methods("GET")
-	r.HandleFunc("/registerdevice", serveSingleFile(buildBox, "html/registerdevice.html")).Methods("GET")
-	r.HandleFunc("/done", serveSingleFile(buildBox, "html/done.html")).Methods("GET")
-	r.HandleFunc("/quit-app", serveSingleFile(buildBox, "html/quit.html")).Methods("GET")
+	r.HandleFunc("/login", serveSingleFile(buildBox, "index.html")).Methods("GET")
+	r.HandleFunc("/register-device", serveSingleFile(buildBox, "index.html")).Methods("GET")
+	r.HandleFunc("/info", serveSingleFile(buildBox, "index.html")).Methods("GET")
 
 	apiRouter := r.PathPrefix("/api").Subrouter()
 
@@ -33,6 +28,8 @@ func initWebserver(config WebserverConfig) *http.Server {
 	apiRouter.HandleFunc("/logout", LogoutRoute).Methods("POST")
 	apiRouter.HandleFunc("/userinfo", UserinfoRoute).Methods("GET")
 	apiRouter.HandleFunc("/quit", QuitRoute).Methods("POST")
+
+	r.PathPrefix("/").Handler(http.FileServer(buildBox.HTTPBox()))
 
 	srv := &http.Server{
 		Handler: r,
@@ -51,12 +48,12 @@ func initWebserver(config WebserverConfig) *http.Server {
 }
 
 func IndexRoute(resp http.ResponseWriter, req *http.Request) {
-	if loggedin, registered := pushover.GetStatus(); !loggedin {
+	if loggedin, registered := pushover.Client.GetStatus(); !loggedin {
 		http.Redirect(resp, req, "/login", http.StatusFound)
 	} else if loggedin && !registered {
 		http.Redirect(resp, req, "/registerdevice", http.StatusFound)
 	} else {
-		http.Redirect(resp, req, "/done", http.StatusFound)
+		http.Redirect(resp, req, "/info", http.StatusFound)
 	}
 }
 
@@ -75,9 +72,9 @@ func LoginRoute(resp http.ResponseWriter, req *http.Request) {
 	}
 
 	if requestData.Code2FA == "" {
-		err = pushover.Login(requestData.Email, requestData.Password)
+		err = pushover.Client.Login(requestData.Email, requestData.Password)
 	} else {
-		err = pushover.Login2FA(requestData.Email, requestData.Password, requestData.Code2FA)
+		err = pushover.Client.Login2FA(requestData.Email, requestData.Password, requestData.Code2FA)
 	}
 
 	if _, is2faerror := err.(*poclient.Missing2FAError); is2faerror {
@@ -91,7 +88,7 @@ func LoginRoute(resp http.ResponseWriter, req *http.Request) {
 	}
 
 	//store user info in config and return successfully
-	config.Userid, config.Usersecret = pushover.User()
+	config.Userid, config.Usersecret = pushover.Client.User()
 	config.Display_Username = requestData.Email
 
 	err = storeConfig(config, "settings.json")
@@ -99,7 +96,7 @@ func LoginRoute(resp http.ResponseWriter, req *http.Request) {
 		resp.Write([]byte(err.Error()))
 	}
 
-	resp.Write([]byte("SUCCESS"))
+	UserinfoRoute(resp, req)
 }
 
 func RegisterRoute(resp http.ResponseWriter, req *http.Request) {
@@ -114,7 +111,7 @@ func RegisterRoute(resp http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	err = pushover.RegisterDevice(requestData.Devicename)
+	err = pushover.Client.RegisterDevice(requestData.Devicename)
 
 	if err != nil {
 		http.Error(resp, err.Error(), http.StatusInternalServerError)
@@ -124,18 +121,18 @@ func RegisterRoute(resp http.ResponseWriter, req *http.Request) {
 	pushover_retry <- true // allow the notification thread to try again
 
 	// store user info in config and return successfully
-	config.Deviceid = pushover.Device()
+	config.Deviceid = pushover.Client.Device()
 	config.Display_Devicename = requestData.Devicename
 
 	err = storeConfig(config, "settings.json")
 	if err != nil {
 		resp.Write([]byte(err.Error()))
 	}
+
+	UserinfoRoute(resp, req)
 }
 
 func LogoutRoute(resp http.ResponseWriter, req *http.Request) {
-	resetPOClient()
-
 	// reset user config
 	config.Userid = ""
 	config.Usersecret = ""
@@ -147,13 +144,17 @@ func LogoutRoute(resp http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		resp.Write([]byte(err.Error()))
 	}
+
+	resetPOClient()
+
+	UserinfoRoute(resp, req)
 }
 
 func UserinfoRoute(resp http.ResponseWriter, req *http.Request) {
 	display_username := config.Display_Username
 	display_devicename := config.Display_Devicename
 
-	loggedin, registered := pushover.GetStatus()
+	loggedin, registered := pushover.Client.GetStatus()
 
 	response := struct {
 		Username   string `json:"username"`

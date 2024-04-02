@@ -5,3 +5,5 @@ SchubsiGo
 rice-box.go
 *.tar.gz
 *.tar.xz
+
+webinterface_legacy
