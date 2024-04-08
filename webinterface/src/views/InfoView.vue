@@ -18,7 +18,7 @@ import { computed, ref } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
 
-import QuitAppButton from "@/components/QuitAppButton.vue";
+import HeaderExtras from "@/components/HeaderExtras.vue";
 import type { UserInfoResponse } from "@/lib/responses";
 
 const router = useRouter();
@@ -26,8 +26,8 @@ const router = useRouter();
 const userInfo = ref<null | UserInfoResponse>(null);
 
 async function refresh() {
-	const resp = await axios.get("/api/userinfo");
-	userInfo.value = resp.data as UserInfoResponse;
+	const resp = await axios.get<UserInfoResponse>("/api/userinfo");
+	userInfo.value = resp.data;
 }
 
 async function logout() {
@@ -41,7 +41,7 @@ refresh();
 <template>
 	<n-card title="Information" :segmented="true">
 		<template #header-extra>
-			<quit-app-button />
+			<header-extras @reset-connection="refresh()" />
 		</template>
 
 		<n-descriptions v-if="userInfo !== null && userInfo.loggedin" title="Currently logged in as">

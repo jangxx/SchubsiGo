@@ -16,7 +16,7 @@ import (
 )
 
 const APP_NAME string = "SchubsiGo"
-const APP_VERSION string = "1.4.0"
+const APP_VERSION string = "1.5.0"
 
 var config Config
 var server *http.Server
@@ -66,6 +66,8 @@ func onReady(noTray bool) {
 		systray.SetTemplateIcon(iconRedData, iconRedData)
 	}
 
+	var mResetConnection *systray.MenuItem
+
 	go func() {
 		configDirs := configdir.New("literalchaos", "schubsigo")
 		config, _ = loadConfig(configDirs, "settings.json")
@@ -75,6 +77,10 @@ func onReady(noTray bool) {
 			mVersion.Disable()
 
 			mOpenWeb := systray.AddMenuItem("Open Web Interface", "Open the web interface")
+
+			mResetConnection = systray.AddMenuItem("Retry Pushover connection", "Retry connecting to the Pushover API")
+			mResetConnection.Hide()
+
 			mQuit := systray.AddMenuItem("Quit", "Quit the whole app")
 
 			go func() {
@@ -84,6 +90,8 @@ func onReady(noTray bool) {
 						exec.Command("xdg-open", "http://"+config.Webserver.Addr+":"+config.Webserver.Port).Start()
 					case <-mQuit.ClickedCh:
 						quit_channel <- true
+					case <-mResetConnection.ClickedCh:
+						resetPOClient()
 					}
 				}
 			}()
@@ -92,9 +100,9 @@ func onReady(noTray bool) {
 		messages = make(map[int]poclient.Message)
 
 		initNotifications()
-		resetPOClient()
-
 		server = initWebserver(config.Webserver)
+
+		resetPOClient()
 	}()
 
 	go func() {
@@ -112,10 +120,13 @@ func onReady(noTray bool) {
 					switch trayIcon {
 					case 0:
 						systray.SetTemplateIcon(iconBlueData, iconBlueData)
+						mResetConnection.Hide()
 					case 1:
 						systray.SetTemplateIcon(iconRedData, iconRedData)
+						mResetConnection.Show()
 					case 2:
 						systray.SetTemplateIcon(iconYellowData, iconYellowData)
+						mResetConnection.Hide()
 					default:
 						log.Printf("Unknown tray icon: %d\n", trayIcon)
 					}

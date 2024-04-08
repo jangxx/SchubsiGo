@@ -48,24 +48,25 @@ Clone this repository and run
 # Modifying the web interface
 
 1. Install node.js
-2. Install gulp
-```
-npm i -g gulp-cli
-```
-3. Install dependencies:
+2. Install dependencies:
 ```
 cd webinterface
 npm i
 ```
-4. Run gulp
+3. Run vite in watch mode:
 ```
-gulp
+npm run watch
 ```
-5. (optional) Run `rice clean`, to serve the webinterface from the built-in webserver in case you ran `rice embed-go` before.
+4. (optional) Run `rice clean`, to serve the webinterface from the built-in webserver in case you ran `rice embed-go` before.
 
-You are now able to change the files around and gulp automatically updates the _build/_ directory.
+You are now able to change the files around and vite automatically updates the _/webinterface/dist/_ directory.
 
-If you are done, simply run `gulp build --production` to build and minify all assets of the webinterface.
+If you are done, simply run `npm run build` to build and minify all assets of the webinterface.
+
+### Alternative
+
+Run `npm run dev` in step 3 instead to spin up a hot-reloading development server instead of serving the files through the Go server.
+This has the advantage of faster iteration and not needing the Go server to be running, but it's also further away from the way everything works in production.
 
 # Attributions
 

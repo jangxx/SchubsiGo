@@ -12,7 +12,7 @@ import { computed, ref } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
 
-import QuitAppButton from "@/components/QuitAppButton.vue";
+import HeaderExtras from "@/components/HeaderExtras.vue";
 import type { UserInfoResponse } from "@/lib/responses";
 
 const router = useRouter();
@@ -31,7 +31,7 @@ async function login() {
 	displayError.value = null;
 
 	try {
-		const resp = await axios.post("/api/login", {
+		const resp = await axios.post<UserInfoResponse | string>("/api/login", {
 			email: email.value,
 			password: password.value,
 			twofacode: (twoFactorRequired.value ? twoFactorCode.value : undefined),
@@ -54,12 +54,21 @@ async function login() {
 		displayError.value = err.response.data;
 	}
 }
+
+async function checkLoggedIn() {
+	const resp = await axios.get<UserInfoResponse>("/api/userinfo");
+	
+	if (resp.data.loggedin) {
+		router.push({ name: "info" });
+	}
+}
+
 </script>
 
 <template>
 	<n-card title="Login" :segmented="true">
 		<template #header-extra>
-			<quit-app-button />
+			<header-extras @reset-connection="checkLoggedIn()"/>
 		</template>
 
 		<div style="margin-bottom: 20px">

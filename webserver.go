@@ -28,6 +28,7 @@ func initWebserver(config WebserverConfig) *http.Server {
 	apiRouter.HandleFunc("/logout", LogoutRoute).Methods("POST")
 	apiRouter.HandleFunc("/userinfo", UserinfoRoute).Methods("GET")
 	apiRouter.HandleFunc("/quit", QuitRoute).Methods("POST")
+	apiRouter.HandleFunc("/reset-connection", ResetConnectionRoute).Methods("POST")
 
 	r.PathPrefix("/").Handler(http.FileServer(buildBox.HTTPBox()))
 
@@ -154,7 +155,12 @@ func UserinfoRoute(resp http.ResponseWriter, req *http.Request) {
 	display_username := config.Display_Username
 	display_devicename := config.Display_Devicename
 
-	loggedin, registered := pushover.Client.GetStatus()
+	var loggedin = false
+	var registered = false
+
+	if pushover != nil {
+		loggedin, registered = pushover.Client.GetStatus()
+	}
 
 	response := struct {
 		Username   string `json:"username"`
@@ -176,4 +182,10 @@ func QuitRoute(resp http.ResponseWriter, req *http.Request) {
 	resp.Write([]byte("ok"))
 
 	quit_channel <- true
+}
+
+func ResetConnectionRoute(resp http.ResponseWriter, req *http.Request) {
+	resetPOClient()
+
+	resp.Write([]byte("ok"))
 }

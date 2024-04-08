@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/GeertJohan/go.rice v1.0.3
 	github.com/esiqveland/notify v0.11.2
-	github.com/getlantern/systray v1.2.1
+	github.com/getlantern/systray v1.2.2
 	github.com/godbus/dbus/v5 v5.0.3
 	github.com/gorilla/mux v1.8.0
 	github.com/jangxx/go-poclient v0.0.0-20220425084146-9d02d3dea86a
@@ -24,5 +24,5 @@ require (
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/oxtoacart/bpool v0.0.0-20190530202638-03653db5a59c // indirect
-	golang.org/x/sys v0.0.0-20200515095857-1151b9dac4a9 // indirect
+	golang.org/x/sys v0.1.0 // indirect
 )

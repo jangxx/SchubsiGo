@@ -69,6 +69,8 @@ func retryInitialization(po *VersionedClient, err url.Error, retries int) bool {
 	}
 
 	log.Println("Error was network related, retry in 5 seconds")
+	tray_icon_channel <- 2
+
 	time.Sleep(5 * time.Second)
 
 	_, nextErr := po.Client.GetMessages() // get messages to test login
